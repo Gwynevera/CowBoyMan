@@ -53,8 +53,8 @@ public class BulletLogic : MonoBehaviour
             {
                 if(collision.transform.GetComponent<HingeJoint2D>() && dismemberment) collision.transform.GetComponent<HingeJoint2D>().breakForce = 1;
                 
-                if (collision.transform.parent.GetComponentInChildren<SpringJoint2D>())
-                    Destroy(collision.transform.parent.GetComponentInChildren<SpringJoint2D>());
+                if (collision.transform.parent.transform.parent.GetComponent<RagdollController>())
+                    collision.transform.parent.transform.parent.GetComponent<RagdollController>().DestoyAnimatedModel();
 
                 Vector2 dir = direction;
                 collision.transform.GetComponent<Rigidbody2D>().AddForce(dir * bulletForceOnImpact * collision.transform.GetComponent<Rigidbody2D>().mass, ForceMode2D.Impulse);

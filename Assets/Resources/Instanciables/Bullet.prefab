@@ -103,7 +103,7 @@ MonoBehaviour:
   controlTime: 10
   speed: 0.1
   rotationSpeed: 0.1
-  bulletForceOnImpact: 50
+  bulletForceOnImpact: 20
   dismemberment: 0
 --- !u!58 &2352459956186401001
 CircleCollider2D:
