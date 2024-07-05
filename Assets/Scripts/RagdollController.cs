@@ -4,6 +4,9 @@ using UnityEngine;
 
 public class RagdollController : MonoBehaviour
 {
+
+    public bool ragdollLeftArm = false;
+
     [Header("Ragdoll Model")]
     [SerializeField] public Transform head;
     [SerializeField] public Transform downLegR;
@@ -17,6 +20,7 @@ public class RagdollController : MonoBehaviour
     [SerializeField] public Transform downArmL;
     [SerializeField] public Transform upArmL;
     [SerializeField] public Transform hat;
+    [SerializeField] public GameObject TargetLArm;
 
     [Header("Animated Model")]
     [SerializeField] private GameObject AnimatedModel;
@@ -32,6 +36,11 @@ public class RagdollController : MonoBehaviour
     [SerializeField] private Transform _downArmL;
     [SerializeField] private Transform _upArmL;
     [SerializeField] private Transform _hat;
+
+    private void Start()
+    {
+        IgnoreArmCollisions();
+    }
 
     private void Update()
     {
@@ -62,19 +71,41 @@ public class RagdollController : MonoBehaviour
         upArmR.position = _upArmR.position;
         upArmR.rotation = _upArmR.rotation;
 
-        downArmL.position = _downArmL.position;
-        downArmL.rotation = _downArmL.rotation;
+        if (!ragdollLeftArm) { 
+            downArmL.position = _downArmL.position;
+            downArmL.rotation = _downArmL.rotation;
 
-        upArmL.position = _upArmL.position;
-        upArmL.rotation = _upArmL.rotation;
-
+            upArmL.position = _upArmL.position;
+            upArmL.rotation = _upArmL.rotation;
+        }
         hat.position = _hat.position;
         hat.rotation = _hat.rotation;
     }
 
     public void DestoyAnimatedModel()
     {
+        bodyUp.GetComponent<Rigidbody2D>().bodyType = RigidbodyType2D.Dynamic;
+        Destroy(TargetLArm.gameObject);
         Destroy(AnimatedModel.gameObject);
         Destroy(this);
     }
+
+    private void IgnoreArmCollisions()
+    {
+        Collider2D[] colliders = GetComponentsInChildren<Collider2D>();
+        
+
+
+        Collider2D upArmCollider = upArmL.GetComponent<Collider2D>();
+        Collider2D downArmCollider = downArmL.GetComponent<Collider2D>();
+
+        for (int i = 0; i < colliders.Length; i++ )
+        {
+            Physics2D.IgnoreCollision(upArmCollider, colliders[i]);
+            Physics2D.IgnoreCollision(downArmCollider, colliders[i]);
+        
+        }
+
+    }
+
 }

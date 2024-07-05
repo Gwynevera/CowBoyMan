@@ -8,6 +8,7 @@ TagManager:
   - Ground
   - Shot
   - Enemy
+  - Cloth
   layers:
   - Default
   - TransparentFX
@@ -19,11 +20,11 @@ TagManager:
   - Ground
   - Enemy
   - Invencible
-  - 
-  - 
-  - 
-  - 
-  - 
+  - Player
+  - Cape
+  - Enemy
+  - LevelCloth
+  - Bullet
   - 
   - 
   - 

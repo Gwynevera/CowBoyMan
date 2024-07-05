@@ -62,7 +62,8 @@ public class BulletLogic : MonoBehaviour
                
             }
         }
-        Destroy(this.gameObject);
+        if (collision.transform.tag != "Cloth")
+            Destroy(this.gameObject);
     }
    
 }
