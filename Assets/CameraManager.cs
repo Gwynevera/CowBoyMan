@@ -18,7 +18,7 @@ public class CameraManager : MonoBehaviour
 
     public Transform targetTransform;
     Vector2 camTarget;
-    float forwardXOffset = 0; //5;
+    float forwardXOffset = 5;
 
     public float leftX, rightX;
     public float topY, bottomY;

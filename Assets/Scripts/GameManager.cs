@@ -140,7 +140,7 @@ public class GameManager : MonoBehaviour
             case GameState.GAME:
                 if (myPlayer == null)
                 {
-                    myPlayer = GameObject.Instantiate(playerPrefab);
+                    myPlayer = GameObject.Instantiate(playerPrefab, new Vector3(0, -15), Quaternion.identity);
                     myPlayer.name = "Player";
                     GetComponent<CameraManager>().targetTransform = myPlayer.transform;
                 }
