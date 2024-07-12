@@ -62,8 +62,12 @@ public class BulletLogic : MonoBehaviour
                
             }
         }
-        if (collision.transform.tag != "Cloth")
+        if (collision.transform.tag != "Cloth") {
+            GameObject.Find("Main Camera").GetComponent<CameraMovement>().cameraTarget = CameraTarget.PLAYER1;
+            GameObject.Find("Main Camera").GetComponent<CameraMovement>().constraintsEnabled = true;
             Destroy(this.gameObject);
+
+        }
     }
    
 }
