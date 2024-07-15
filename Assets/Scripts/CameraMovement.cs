@@ -32,7 +32,7 @@ public class CameraMovement : MonoBehaviour
     
    
 
-    [Header("Bullet")]
+    [Header("Bullet Charge")]
     public float chargedShootZoomTarget = 2;
 
     [Header("Bullet")]
@@ -63,7 +63,6 @@ public class CameraMovement : MonoBehaviour
 
     private void Update()
     {
-        
         Vector3 posOriginal = new Vector3();
 
         //Camera Target
@@ -97,6 +96,7 @@ public class CameraMovement : MonoBehaviour
 
         
         posOriginal = cameraHolder.transform.position;
+        posOriginal.z = originalZ;
 
         if (posFinal != posOriginal && !resetingCamera)
         {
@@ -133,12 +133,12 @@ public class CameraMovement : MonoBehaviour
 
             mainCam.orthographicSize = zoomLerp.x;
 
-            elapsed += Time.deltaTime;
+            elapsed += Time.fixedDeltaTime;
 
             yield return null;
         }
 
-        resetingCameraCorutine = ResetCamera(0.5f);
+        resetingCameraCorutine = ResetCamera(1f);
         StartCoroutine(resetingCameraCorutine);
 
     }
@@ -164,7 +164,7 @@ public class CameraMovement : MonoBehaviour
             yield return null;
         }
 
-        transform.localPosition = Vector3.zero;
+        transform.localPosition = originalPos;
 
     }
 
@@ -182,7 +182,7 @@ public class CameraMovement : MonoBehaviour
             
             if (elapsed < duration)
             {
-                magnitude = intialMagnitude + magnitudeProgression * Time.deltaTime;
+                magnitude = intialMagnitude + magnitudeProgression;
             }
            
 
@@ -238,8 +238,8 @@ public class CameraMovement : MonoBehaviour
         _posFinal.x = Player.transform.position.x + (Player.transform.position.x - Player.transform.position.x) / 2;
         _posFinal.y = Player.transform.position.y + (Player.transform.position.y - Player.transform.position.y) / 2;
 
-        if(constraintsEnabled) _posFinal = new Vector3(_posFinal.x, _posFinal.y + yOffset, transform.position.z);
-        else _posFinal = new Vector3(_posFinal.x, _posFinal.y, transform.position.z);
+        if(constraintsEnabled) _posFinal = new Vector3(_posFinal.x, _posFinal.y + yOffset, originalZ);
+        else _posFinal = new Vector3(_posFinal.x, _posFinal.y, originalZ);
 
         if (_posFinal.y < minY && constraintsEnabled)
         {
@@ -248,16 +248,21 @@ public class CameraMovement : MonoBehaviour
         
         cameraTarget = CameraTarget.PLAYER1;
 
+
+        posOriginal.z = originalZ;
+        posFinal.z = originalZ;
+
+
         while (elapsed < duration)
         {
-            percentage = elapsed / 0.25f;
+            percentage = elapsed / duration;
             Vector3 zoomLerp = Vector3.Lerp(new Vector3(StartZoom, 0, 0), new Vector3(initialZoom, 0, 0), percentage);
 
             cameraHolder.transform.position = Vector3.Lerp(posOriginal, _posFinal, percentage);
 
             mainCam.orthographicSize = zoomLerp.x;
 
-            elapsed += Time.deltaTime;
+            elapsed += Time.fixedDeltaTime;
 
             yield return null;
         }

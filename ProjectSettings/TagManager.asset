@@ -9,6 +9,8 @@ TagManager:
   - Shot
   - Enemy
   - Cloth
+  - Level
+  - Hat
   layers:
   - Default
   - TransparentFX
@@ -25,9 +27,9 @@ TagManager:
   - Enemy
   - LevelCloth
   - Bullet
+  - Physics
   - 
-  - 
-  - 
+  - Hat
   - 
   - 
   - 

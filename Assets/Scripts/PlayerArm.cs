@@ -22,7 +22,7 @@ public class PlayerArm : MonoBehaviour
         
         if (active)
         {
-            rb.MoveRotation(Mathf.LerpAngle(rb.rotation, rotationZ, speed * Time.fixedDeltaTime));
+            rb.MoveRotation(Mathf.LerpAngle(rb.rotation, rotationZ, speed * Time.deltaTime));
         }
         
 

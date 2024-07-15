@@ -1,17 +1,24 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Rendering;
+using UnityEngine.Rendering.Universal;
 
 public class BulletInstantiator : MonoBehaviour
 {
     [SerializeField] private Transform spawnPoint;
     [SerializeField] private GameObject bulletPrefab;
-    [SerializeField] private float ShooitngCooldwon = 0.25f;
-    [SerializeField] private PlayerArm[] arms; 
+    [SerializeField] private float ShooitngCooldown = 0.25f;
+    [SerializeField] private PlayerArm[] arms;
+
+    private Volume postproces;
+    private Vignette vignette;
+    private float vignetteOrignialIntesity;
+    private IEnumerator vignetteCorutine;
 
     private bool cooldownCharging = false;
 
-    private bool canShoot = true;
+    public bool canShoot = true;
     private bool loadingShoot = false;
     private bool resetingTime = false;
     public float chargedShootTime = 0;
@@ -24,10 +31,26 @@ public class BulletInstantiator : MonoBehaviour
     private IEnumerator shakeCorutine;
     private float normalFixedDeltaTime;
 
+    [Header("Wind Effect")]
+    public float windRange = 10;
+    public LayerMask windLayers;
+    public float windForce = 5;
+    public float windTorqueForce = 1.5f;
+
+
+    [Header("Particle")]
+    public ParticleSystem smokePS;
+
     private void Start()
     {
         bulletPrefab = Resources.Load("Instanciables/Bullet") as GameObject;
         cm = GameObject.Find("Main Camera").GetComponent<CameraMovement>();
+
+        postproces = GameObject.Find("PostProcessing").GetComponent<Volume>();
+        postproces.profile.TryGet(out vignette);
+        vignetteOrignialIntesity = vignette.intensity.value;
+
+
     }
     private void Update()
     {
@@ -36,32 +59,36 @@ public class BulletInstantiator : MonoBehaviour
 
         if (resetingTime)
         {
-            Time.timeScale += (1f / ShooitngCooldwon) * Time.unscaledDeltaTime;
+            Time.timeScale += (1f / ShooitngCooldown) * Time.unscaledDeltaTime;
             Time.timeScale = Mathf.Clamp(Time.timeScale, 0 ,1);
-
-
+            for (int i = 0; i < arms.Length; i++)
+            {
+                arms[i].enabled = true;
+            }
             if (Time.timeScale == 1) {
                 resetingTime = false;
                 Time.fixedDeltaTime = normalFixedDeltaTime;
-                for (int i = 0; i < arms.Length; i++)
-                {
-                    arms[i].enabled = true;
-                }
+                
             }
 
         }
 
-        if (Input.GetKeyDown(KeyCode.Mouse0) && canShoot)
-        {
-            cm.constraintsEnabled = false;
-            cm.StopAllCoroutines();
-            zoomCorutine = cm.CameraZoom(maxChargingShootTime, cm.chargedShootZoomTarget);
-            shakeCorutine = cm.CameraProgresiveShake(maxChargingShootTime, 0.05f, 0.001f);
-            StartCoroutine(shakeCorutine);
-            StartCoroutine(zoomCorutine);
-        }
+      
         if (Input.GetKey(KeyCode.Mouse0) && canShoot)
         {
+            if (!loadingShoot)
+            {
+
+               
+                cm.constraintsEnabled = false;
+                cm.StopAllCoroutines();
+                zoomCorutine = cm.CameraZoom(maxChargingShootTime, cm.chargedShootZoomTarget);
+                shakeCorutine = cm.CameraProgresiveShake(maxChargingShootTime, 0.05f, 0.001f);
+                StartCoroutine(shakeCorutine);
+                StartCoroutine(zoomCorutine);
+                vignetteCorutine = VignetteEffect(2, 0.4f);
+                StartCoroutine(vignetteCorutine);
+            }
 
             loadingShoot = true;
             if (chargedShootTime < maxChargingShootTime) 
@@ -71,12 +98,13 @@ public class BulletInstantiator : MonoBehaviour
 
         if (Input.GetKeyUp(KeyCode.Mouse0) && loadingShoot)
         {
+            
 
             for (int i = 0; i < arms.Length; i++ )
             {
                 arms[i].enabled = false;
             }
-
+            smokePS.Play();
             instantiateBullet();
             loadingShoot = false;
             canShoot = false;
@@ -89,6 +117,9 @@ public class BulletInstantiator : MonoBehaviour
     private void instantiateBullet()
     {
 
+       
+
+
         Time.timeScale = 0.05f;
         normalFixedDeltaTime = Time.fixedDeltaTime;
         Time.fixedDeltaTime = Time.timeScale * 0.02f;
@@ -96,7 +127,9 @@ public class BulletInstantiator : MonoBehaviour
         bulletInstance = Instantiate(bulletPrefab);
         bulletInstance.transform.position = spawnPoint.position;
         BulletLogic bl = bulletInstance.GetComponent<BulletLogic>();
-        bl.direction = (Camera.main.ScreenToWorldPoint(Input.mousePosition) - spawnPoint.position).normalized;
+        Vector3 dir = (Camera.main.ScreenToWorldPoint(Input.mousePosition) - spawnPoint.position).normalized;
+        bl.direction = dir;
+        bl.instantiator = this;
 
         if(cm.resetingCameraCorutine != null) {
             StopCoroutine(cm.resetingCameraCorutine);
@@ -122,17 +155,74 @@ public class BulletInstantiator : MonoBehaviour
         
 
         chargedShootTime = 0;
+
+
+        //Wind effect
+        Collider2D[] rbs = Physics2D.OverlapCircleAll(spawnPoint.position, windRange, windLayers);
+
+        
+
+        for (int i = 0; i < rbs.Length; i++)
+        {
+            if (rbs[i].GetComponent<Rigidbody2D>())
+            {
+                Vector3 windDir = rbs[i].transform.position - spawnPoint.position;
+                rbs[i].GetComponent<Rigidbody2D>().AddForce(windDir.normalized * windForce, ForceMode2D.Impulse);
+                rbs[i].GetComponent<Rigidbody2D>().AddTorque(windTorqueForce, ForceMode2D.Impulse);
+            }
+        }
+
     }
 
     IEnumerator shootingCooldown()
     {
+        
         resetingTime = true;
         cooldownCharging = true;
-        yield return new WaitForSecondsRealtime(ShooitngCooldwon);
+        yield return new WaitForSecondsRealtime(ShooitngCooldown);
         canShoot = true;
         cooldownCharging = false;
-        resetingTime = true;
+        resetingTime = false;
+        smokePS.Stop();
 
-        
     }
+
+    public void resetVignette()
+    {
+        StopCoroutine(vignetteCorutine);
+        vignetteCorutine = VignetteEffect(0.5f, vignetteOrignialIntesity);
+        StartCoroutine(vignetteCorutine);
+    }
+
+    public IEnumerator VignetteEffect(float duration, float intensity)
+    {
+
+
+        float elapsed = 0.0f;
+        float percentage = 0.0f;
+
+        float startIntensity = vignette.intensity.value;
+
+        while (elapsed < duration)
+        {
+            percentage = elapsed / duration;
+
+            vignette.intensity.value = Mathf.Lerp(startIntensity, intensity, percentage);
+
+            elapsed += Time.deltaTime;
+
+            yield return null;
+        }
+
+    }
+
+    private void OnDrawGizmosSelected()
+    {
+        if (spawnPoint == null)
+            return;
+        
+
+        Gizmos.DrawWireSphere(spawnPoint.position, windRange);
+    }
+
 }

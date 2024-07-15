@@ -484,7 +484,7 @@ SpriteRenderer:
   m_LightmapParameters: {fileID: 0}
   m_SortingLayerID: 0
   m_SortingLayer: 0
-  m_SortingOrder: 2
+  m_SortingOrder: 1
   m_Sprite: {fileID: 7482667652216324306, guid: 311925a002f4447b3a28927169b83ea6, type: 3}
   m_Color: {r: 0, g: 0, b: 0, a: 1}
   m_FlipX: 0
@@ -1190,9 +1190,9 @@ GameObject:
   - component: {fileID: 8656127714093555797}
   - component: {fileID: 7389471080145706348}
   - component: {fileID: 2825008771897805177}
-  m_Layer: 12
+  m_Layer: 17
   m_Name: Hat
-  m_TagString: Enemy
+  m_TagString: Hat
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -1253,7 +1253,7 @@ SpriteRenderer:
   m_LightmapParameters: {fileID: 0}
   m_SortingLayerID: 0
   m_SortingLayer: 0
-  m_SortingOrder: 1
+  m_SortingOrder: 2
   m_Sprite: {fileID: 7482667652216324306, guid: 311925a002f4447b3a28927169b83ea6, type: 3}
   m_Color: {r: 0.7169812, g: 0.35596284, b: 0, a: 1}
   m_FlipX: 0
@@ -1273,11 +1273,11 @@ Rigidbody2D:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 3280843627306624078}
-  m_BodyType: 0
+  m_BodyType: 1
   m_Simulated: 1
   m_UseFullKinematicContacts: 0
   m_UseAutoMass: 0
-  m_Mass: 10
+  m_Mass: 1
   m_LinearDrag: 0
   m_AngularDrag: 0.05
   m_GravityScale: 1
@@ -1289,8 +1289,8 @@ Rigidbody2D:
     serializedVersion: 2
     m_Bits: 0
   m_Interpolate: 0
-  m_SleepingMode: 0
-  m_CollisionDetection: 1
+  m_SleepingMode: 1
+  m_CollisionDetection: 0
   m_Constraints: 0
 --- !u!61 &2825008771897805177
 BoxCollider2D:
@@ -1913,7 +1913,7 @@ SpriteRenderer:
   m_LightmapParameters: {fileID: 0}
   m_SortingLayerID: 0
   m_SortingLayer: 0
-  m_SortingOrder: 1
+  m_SortingOrder: 2
   m_Sprite: {fileID: 7482667652216324306, guid: 311925a002f4447b3a28927169b83ea6, type: 3}
   m_Color: {r: 0.7169812, g: 0.35596284, b: 0, a: 1}
   m_FlipX: 0
@@ -1936,9 +1936,9 @@ GameObject:
   - component: {fileID: 4028978818728380006}
   - component: {fileID: 8938031963907755926}
   - component: {fileID: 6820775691523226911}
-  m_Layer: 12
+  m_Layer: 17
   m_Name: Hat (1)
-  m_TagString: Enemy
+  m_TagString: Hat
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -1998,7 +1998,7 @@ SpriteRenderer:
   m_LightmapParameters: {fileID: 0}
   m_SortingLayerID: 0
   m_SortingLayer: 0
-  m_SortingOrder: 1
+  m_SortingOrder: 2
   m_Sprite: {fileID: 7482667652216324306, guid: 311925a002f4447b3a28927169b83ea6, type: 3}
   m_Color: {r: 0.7169812, g: 0.35596284, b: 0, a: 1}
   m_FlipX: 0
@@ -2042,7 +2042,7 @@ BoxCollider2D:
   m_IsTrigger: 0
   m_UsedByEffector: 0
   m_UsedByComposite: 0
-  m_Offset: {x: 0, y: 0}
+  m_Offset: {x: 0, y: 0.18353093}
   m_SpriteTilingProperty:
     border: {x: 0, y: 0, z: 0, w: 0}
     pivot: {x: 0.5, y: 0.5}
@@ -2053,7 +2053,7 @@ BoxCollider2D:
     adaptiveTiling: 0
   m_AutoTiling: 0
   serializedVersion: 2
-  m_Size: {x: 1, y: 1}
+  m_Size: {x: 1, y: 0.63293815}
   m_EdgeRadius: 0
 --- !u!1 &4532993479729548696
 GameObject:
@@ -5002,7 +5002,7 @@ SpriteRenderer:
   m_LightmapParameters: {fileID: 0}
   m_SortingLayerID: 0
   m_SortingLayer: 0
-  m_SortingOrder: 1
+  m_SortingOrder: 2
   m_Sprite: {fileID: 7482667652216324306, guid: 311925a002f4447b3a28927169b83ea6, type: 3}
   m_Color: {r: 0.7169812, g: 0.35596284, b: 0, a: 1}
   m_FlipX: 0
@@ -5263,6 +5263,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   ragdollLeftArm: 0
+  dropHat: 0
   head: {fileID: 5749165620580883920}
   downLegR: {fileID: 8188080460284623759}
   uperLegR: {fileID: 778073301210080347}

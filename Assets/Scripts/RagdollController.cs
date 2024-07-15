@@ -6,6 +6,7 @@ public class RagdollController : MonoBehaviour
 {
 
     public bool ragdollLeftArm = false;
+    public bool dropHat = false;
 
     [Header("Ragdoll Model")]
     [SerializeField] public Transform head;
@@ -78,8 +79,14 @@ public class RagdollController : MonoBehaviour
             upArmL.position = _upArmL.position;
             upArmL.rotation = _upArmL.rotation;
         }
-        hat.position = _hat.position;
-        hat.rotation = _hat.rotation;
+        if (!dropHat) { 
+            hat.position = _hat.position;
+            hat.rotation = _hat.rotation;
+        }
+        else
+        {
+            _hat.gameObject.SetActive(false);
+        }
     }
 
     public void DestoyAnimatedModel()
