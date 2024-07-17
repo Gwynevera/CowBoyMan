@@ -9,7 +9,8 @@ public class BulletInstantiator : MonoBehaviour
     [SerializeField] private Transform spawnPoint;
     [SerializeField] private GameObject bulletPrefab;
     [SerializeField] private float ShooitngCooldown = 0.25f;
-    [SerializeField] private PlayerArm[] arms;
+    [SerializeField] private PlayerArm Downarm;
+    [SerializeField] private PlayerArm UperArm;
 
     private Volume postproces;
     private Vignette vignette;
@@ -24,12 +25,14 @@ public class BulletInstantiator : MonoBehaviour
     public float chargedShootTime = 0;
     public float maxChargingShootTime = 0;
     public float minBulletmultiplier = 0.5f; 
-    public float maxBulletmultiplier = 2.0f; 
+    public float maxBulletmultiplier = 2.0f;
+   
     private GameObject bulletInstance;
     private CameraMovement cm;
     private IEnumerator zoomCorutine;
     private IEnumerator shakeCorutine;
     private float normalFixedDeltaTime;
+
 
     [Header("Wind Effect")]
     public float windRange = 10;
@@ -61,14 +64,13 @@ public class BulletInstantiator : MonoBehaviour
         {
             Time.timeScale += (1f / ShooitngCooldown) * Time.unscaledDeltaTime;
             Time.timeScale = Mathf.Clamp(Time.timeScale, 0 ,1);
-            for (int i = 0; i < arms.Length; i++)
-            {
-                arms[i].enabled = true;
-            }
+            
             if (Time.timeScale == 1) {
                 resetingTime = false;
                 Time.fixedDeltaTime = normalFixedDeltaTime;
                 
+                Downarm.active = true;
+                UperArm.lockArm = false;
             }
 
         }
@@ -100,10 +102,9 @@ public class BulletInstantiator : MonoBehaviour
         {
             
 
-            for (int i = 0; i < arms.Length; i++ )
-            {
-                arms[i].enabled = false;
-            }
+            Downarm.active = false;
+            UperArm.lockArm = true;
+
             smokePS.Play();
             instantiateBullet();
             loadingShoot = false;

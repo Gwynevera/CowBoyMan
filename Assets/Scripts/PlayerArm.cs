@@ -5,9 +5,10 @@ using UnityEngine;
 public class PlayerArm : MonoBehaviour
 {
     public bool active = false;
+    public bool lockArm = false;
     public int speed = 300;
     private Rigidbody2D rb;
-
+    private Vector3 target;
     private void Start()
     {
         rb = GetComponent<Rigidbody2D>();
@@ -16,10 +17,17 @@ public class PlayerArm : MonoBehaviour
     void Update()
     {
 
-        Vector3 target = Camera.main.ScreenToWorldPoint(Input.mousePosition);
+        
+
+        if (!lockArm) 
+        { 
+            target = Camera.main.ScreenToWorldPoint(Input.mousePosition); 
+        }
+      
+
         Vector3 diff = target - transform.position;
         float rotationZ = Mathf.Atan2(diff.x, -diff.y) * Mathf.Rad2Deg;
-        
+       
         if (active)
         {
             rb.MoveRotation(Mathf.LerpAngle(rb.rotation, rotationZ, speed * Time.deltaTime));
