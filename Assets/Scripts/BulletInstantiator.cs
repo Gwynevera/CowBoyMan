@@ -129,7 +129,7 @@ public class BulletInstantiator : MonoBehaviour
         bulletInstance.transform.position = spawnPoint.position;
         BulletLogic bl = bulletInstance.GetComponent<BulletLogic>();
         Vector3 dir = (Camera.main.ScreenToWorldPoint(Input.mousePosition) - spawnPoint.position).normalized;
-        bl.direction = dir;
+        bl.direction = dir.normalized;
         bl.instantiator = this;
 
         if(cm.resetingCameraCorutine != null) {

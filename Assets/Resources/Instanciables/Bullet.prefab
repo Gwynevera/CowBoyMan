@@ -103,7 +103,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   direction: {x: 0, y: 0}
   controlTime: 10
-  speed: 0.1
+  speed: 75
   rotationSpeed: 0.1
   bulletForceOnImpact: 50
   dismemberment: 0
@@ -112,7 +112,7 @@ MonoBehaviour:
   windLayers:
     serializedVersion: 2
     m_Bits: 172032
-  windForce: 0.2
+  windForce: 0.1
   windTorqueForce: 0.01
 --- !u!58 &2352459956186401001
 CircleCollider2D:

@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.AI;
 
 public class RagdollController : MonoBehaviour
 {
@@ -38,6 +39,8 @@ public class RagdollController : MonoBehaviour
     [SerializeField] private Transform _upArmL;
     [SerializeField] private Transform _hat;
 
+
+
     private void Start()
     {
         IgnoreArmCollisions();
@@ -45,6 +48,7 @@ public class RagdollController : MonoBehaviour
 
     private void Update()
     {
+
         head.position = _head.position; 
         head.rotation = _head.rotation; 
 
@@ -89,9 +93,11 @@ public class RagdollController : MonoBehaviour
         }
     }
 
-    public void DestoyAnimatedModel()
+    public void Die()
     {
         bodyUp.GetComponent<Rigidbody2D>().bodyType = RigidbodyType2D.Dynamic;
+        Destroy(GetComponent<EnemyBehaviour>());
+        Destroy(GetComponent<NavMeshAgent>());
         Destroy(TargetLArm.gameObject);
         Destroy(AnimatedModel.gameObject);
         Destroy(this);

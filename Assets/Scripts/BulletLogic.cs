@@ -73,7 +73,7 @@ public class BulletLogic : MonoBehaviour
 
 
 
-        transform.position += new Vector3(direction.x * speed, direction.y * speed, 0);
+        transform.position += new Vector3(direction.x * speed * Time.fixedDeltaTime, direction.y * speed * Time.fixedDeltaTime, 0);
 
 
         //Wind effect
@@ -89,6 +89,11 @@ public class BulletLogic : MonoBehaviour
                 if (rbs[i].transform.tag == "Hat")
                 {
                     if(rbs[i].transform.parent.transform.parent.GetComponent<RagdollController>()) rbs[i].transform.parent.transform.parent.GetComponent<RagdollController>().dropHat = true;
+                    rbs[i].transform.GetComponent<Rigidbody2D>().bodyType = RigidbodyType2D.Dynamic;
+                }
+
+                if (rbs[i].transform.tag == "Physics")
+                {
                     rbs[i].transform.GetComponent<Rigidbody2D>().bodyType = RigidbodyType2D.Dynamic;
                 }
 
@@ -124,7 +129,7 @@ public class BulletLogic : MonoBehaviour
                 if(collision.transform.GetComponent<HingeJoint2D>() && dismemberment) collision.transform.GetComponent<HingeJoint2D>().breakForce = 1;
                 
                 if (collision.transform.parent.transform.parent.GetComponent<RagdollController>())
-                    collision.transform.parent.transform.parent.GetComponent<RagdollController>().DestoyAnimatedModel();
+                    collision.transform.parent.transform.parent.GetComponent<RagdollController>().Die();
 
                 Vector2 dir = direction;
                 collision.transform.GetComponent<Rigidbody2D>().AddForce(dir * bulletForceOnImpact * collision.transform.GetComponent<Rigidbody2D>().mass, ForceMode2D.Impulse);
