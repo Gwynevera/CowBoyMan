@@ -12,6 +12,7 @@ TagManager:
   - Level
   - Hat
   - Physics
+  - EnemyBullet
   layers:
   - Default
   - TransparentFX

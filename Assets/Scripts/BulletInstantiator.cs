@@ -154,6 +154,7 @@ public class BulletInstantiator : MonoBehaviour
         bl.bulletForceOnImpact *= multiplier;
 
         
+        
 
         chargedShootTime = 0;
 

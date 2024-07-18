@@ -12,7 +12,7 @@ GameObject:
   - component: {fileID: 1615120382142947800}
   - component: {fileID: 4597263173698925407}
   m_Layer: 0
-  m_Name: Spark
+  m_Name: SphereSpark
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -169,8 +169,8 @@ ParticleSystem:
     startSpeed:
       serializedVersion: 2
       minMaxState: 3
-      scalar: 8
-      minScalar: 5
+      scalar: 6
+      minScalar: 3
       maxCurve:
         serializedVersion: 2
         m_Curve:
@@ -664,7 +664,7 @@ ParticleSystem:
   ShapeModule:
     serializedVersion: 6
     enabled: 1
-    type: 4
+    type: 0
     angle: 55.3
     length: 5
     boxThickness: {x: 0, y: 0, z: 0}
@@ -3850,7 +3850,7 @@ ParticleSystem:
     radiusScale: 1
     collidesWith:
       serializedVersion: 2
-      m_Bits: 32897
+      m_Bits: 32769
     maxCollisionShapes: 256
     quality: 0
     voxelSize: 0.5

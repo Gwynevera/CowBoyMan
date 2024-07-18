@@ -27,6 +27,11 @@ public class BulletLogic : MonoBehaviour
     public float windForce = 10;
     public float windTorqueForce = 1.5f;
 
+
+    [Header("Bullet Destroyer")]
+    public float bulletDestroyerRange = 5;
+    public LayerMask bulletDestroyerLayers;
+
     private void Start()
     {
 
@@ -79,8 +84,6 @@ public class BulletLogic : MonoBehaviour
         //Wind effect
         Collider2D[] rbs = Physics2D.OverlapCircleAll(transform.position, windRange, windLayers);
 
-
-
         for (int i = 0; i < rbs.Length; i++)
         {
             if (rbs[i].GetComponent<Rigidbody2D>())
@@ -97,14 +100,28 @@ public class BulletLogic : MonoBehaviour
                     rbs[i].transform.GetComponent<Rigidbody2D>().bodyType = RigidbodyType2D.Dynamic;
                 }
 
-                Vector3 windDir = transform.position - rbs[i].transform.position;
+                
+                Vector3 windDir = direction;
                 rbs[i].GetComponent<Rigidbody2D>().AddForce(windDir.normalized * windForce, ForceMode2D.Impulse);
                 rbs[i].GetComponent<Rigidbody2D>().AddTorque(-windTorqueForce, ForceMode2D.Impulse);
 
             }
         }
 
+        //Bullet Destroyer
 
+        Collider2D[] bullets = Physics2D.OverlapCircleAll(transform.position, bulletDestroyerRange, bulletDestroyerLayers);
+
+        for (int i = 0; i < bullets.Length; i++)
+        {
+            if (bullets[i].GetComponent<Rigidbody2D>())
+            {
+                if (bullets[i].transform.tag == "EnemyBullet")
+                {
+                    bullets[i].transform.GetComponent<EnemyBullet>().destroyBullet(true);
+                }
+            } 
+        }
     }
 
     IEnumerator ControllWaiter()
