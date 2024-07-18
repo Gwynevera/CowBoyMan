@@ -50,8 +50,8 @@ public class Player : MonoBehaviour
                 rightKey = KeyCode.D;
                 downKey = KeyCode.S;
                 upKey = KeyCode.W;
-                jumpKey = KeyCode.K;
-                shootKey = KeyCode.J;
+                jumpKey = KeyCode.Space;
+                shootKey = KeyCode.Mouse0;
             }
             else if (p == PlayerKeyType.Controller)
             {
@@ -67,6 +67,8 @@ public class Player : MonoBehaviour
     public bool keyRight;
     public bool keyDown;
     public bool keyUp;
+
+    bool prevDown;
 
     string DPad_X = "DPad_X";
     string DPad_Y = "DPad_Y";
@@ -281,6 +283,8 @@ public class Player : MonoBehaviour
             {
                 speed = minSpeed;
             }
+
+            slide = false;
         }
 
         wall = WallCheck();
@@ -298,10 +302,27 @@ public class Player : MonoBehaviour
         else if (!keyUp && keyDown)
         {
             dir.y = -1;
+
+            // Slide event
+            if (!slide && grounded && speed >= maxSpeed && rb.velocity.x != 0 && !prevDown)
+            {
+                slide = true;
+                slideTimer = 0;
+                shooting = false;
+            }
+
+            prevDown = true;
         }
         else
         {
             dir.y = 0;
+
+            if (!keyDown)
+            {
+                slide = false;
+
+                prevDown = false;
+            }
         }
         
         // Sprite flip
@@ -340,13 +361,6 @@ public class Player : MonoBehaviour
                     slide = false;
                     keepSlideSpeed = true;
                 }
-            }
-            // Slide event
-            else if ((!prevJump || jumpBuffer) && grounded && keyDown)
-            {
-                slide = true;
-                slideTimer = 0;
-                shooting = false;
             }
         }
         // Jumping
