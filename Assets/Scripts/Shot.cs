@@ -57,8 +57,6 @@ public class Shot : MonoBehaviour
 
     void UpdatePlayerShots(bool enemyHit = false)
     {
-        GameObject.Find("Player").GetComponent<Player>().shots--;
-
         GameObject i = null;
         int r = Random.Range(0, 2);
         if (r==0)

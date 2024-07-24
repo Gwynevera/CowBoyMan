@@ -35,7 +35,6 @@ public class Player : MonoBehaviour
         public KeyCode upKey;
 
         public KeyCode jumpKey;
-        public KeyCode shootKey;
 
         public PlayerKeys()
         {
@@ -51,12 +50,10 @@ public class Player : MonoBehaviour
                 downKey = KeyCode.S;
                 upKey = KeyCode.W;
                 jumpKey = KeyCode.Space;
-                shootKey = KeyCode.Mouse0;
             }
             else if (p == PlayerKeyType.Controller)
             {
                 jumpKey = KeyCode.Joystick1Button0;
-                shootKey = KeyCode.Joystick1Button2;
             }
         }
     }
@@ -79,18 +76,16 @@ public class Player : MonoBehaviour
 
     public bool keyJump;
     public bool keyDash;
-    public bool keyShoot;
 
     public bool prevJump;
     public bool prevDash;
-    public bool prevShoot;
 
     public float minStickValue = 0.5f;
 
     Rigidbody2D rb;
     BoxCollider2D box;
-    Animator anim;
-    SpriteRenderer sprite;
+    //Animator anim;
+    //SpriteRenderer sprite;
 
     [Header("Life & Death")]
     public int health = 20;
@@ -107,31 +102,6 @@ public class Player : MonoBehaviour
     [Header("Blink")]
     float blinkTime = 0.025f;
     float blinkTimer;
-
-    [Header("Shoot")]
-    public GameObject shot;
-    public GameObject shootFlash;
-    public int shots;
-    int maxShots = 3;
-    public Transform shotSpawn;
-    float shotFlashOffset = 0.25f;
-    float originalX;
-    float shootingTime = 1;
-    float shootingTimer;
-    public bool shooting;
-
-    [Header("Volley")]
-    public bool volley;
-    public bool willVolley;
-    public int volleyCount;
-    int volleyLimit = 5;
-    float keepVolleyTime = 0.35f;
-    float keepVolleyTimer;
-    float volleySpeedMult = 1.15f;
-
-    [Header("Arms")]
-    public GameObject normalArm;
-    public GameObject shootArm;
 
     [Header("Direction")]
     public Vector2 dir = new Vector2();
@@ -189,12 +159,10 @@ public class Player : MonoBehaviour
     {
         rb = GetComponent<Rigidbody2D>();
         box = GetComponent<BoxCollider2D>();
-        anim = GetComponent<Animator>();
-        sprite = GetComponent<SpriteRenderer>();
+        //anim = GetComponent<Animator>();
+        //sprite = GetComponent<SpriteRenderer>();
 
         myKeys = new PlayerKeys(pKeys);
-
-        originalX = shotSpawn.transform.localPosition.x;
     }
 
     // Update
@@ -231,7 +199,6 @@ public class Player : MonoBehaviour
         {
             prevDash = keyDash;
             prevJump = keyJump;
-            prevShoot = keyShoot;
 
             // Input
             if (pKeys == PlayerKeyType.Keyboard)
@@ -250,7 +217,6 @@ public class Player : MonoBehaviour
             }
 
             keyJump = Input.GetKey(myKeys.jumpKey);
-            keyShoot = Input.GetKey(myKeys.shootKey);
         }
         #endregion
 
@@ -267,12 +233,12 @@ public class Player : MonoBehaviour
         {
             dir.x = 0;
         }
-        anim.SetBool("Run", dir.x != 0);
+        //anim.SetBool("Run", dir.x != 0);
 
         // Turn Around
         if (lastXdir != dir.x)
         {
-            anim.SetBool("Run", false);
+            //anim.SetBool("Run", false);
 
             if (grounded)
             {
@@ -308,7 +274,6 @@ public class Player : MonoBehaviour
             {
                 slide = true;
                 slideTimer = 0;
-                shooting = false;
             }
 
             prevDown = true;
@@ -328,14 +293,13 @@ public class Player : MonoBehaviour
         // Sprite flip
         if (dir.x == 1)
         {
-            sprite.flipX = true;
+            //sprite.flipX = true;
         }
         else if (dir.x == -1)
         {
-            sprite.flipX = false;
+            //sprite.flipX = false;
         }
-        lastXdir = sprite.flipX ? 1 : -1;
-        shotSpawn.transform.localPosition = new Vector3(lastXdir * originalX, shotSpawn.transform.localPosition.y);
+        lastXdir = /*sprite.flipX ? 1 : -1*/ (int)dir.x;
 
         #region Jump / Slide
         if (keyJump)
@@ -392,7 +356,7 @@ public class Player : MonoBehaviour
                 endJump = false;
             }
         }
-        anim.SetBool("Jump", jump);
+        //anim.SetBool("Jump", jump);
 
         // Slide
         if (slide)
@@ -419,7 +383,7 @@ public class Player : MonoBehaviour
             box.size = normalHitboxSize;
         }
 
-        anim.SetBool("Slide", slide);
+        //anim.SetBool("Slide", slide);
         #endregion
 
         // Velocity
@@ -466,52 +430,8 @@ public class Player : MonoBehaviour
             }
         }
 
-        #region Shoot
-        // Show arm shooting
-        if (shooting)
-        {
-            shootingTimer += Time.fixedDeltaTime;
-            if (shootingTimer >= shootingTime)
-            {
-                shooting = false;
-                volley = false;
-            }
-
-            // Not mashed lo suficientement rapid
-            keepVolleyTimer += Time.fixedDeltaTime;
-            if (keepVolleyTimer > keepVolleyTime)
-            {
-                willVolley = false;
-                volleyCount = 0;
-            }
-        }
-
-        // Shoot
-        if (keyShoot)
-        {
-            if (!prevShoot && !slide)
-            {
-                // Shoot when can Shoot
-                if (shots < maxShots)
-                {
-                    Shoot();
-                }
-            }
-        }
-
-        anim.SetBool("Shooting", shooting);
-
-        if (dir.x != 0 || jump)
-        {
-            volley = false;
-            willVolley = false;
-            volleyCount = 0;
-        }
-        anim.SetBool("Volley", volley);
-        #endregion
-
         grounded = GroundCheck();
-        anim.SetBool("Ground", grounded);
+        //anim.SetBool("Ground", grounded);
 
         #region Damage
         if (damage)
@@ -533,55 +453,26 @@ public class Player : MonoBehaviour
             if (blinkTimer >= blinkTime)
             {
                 blinkTimer = 0;
-                sprite.enabled = !sprite.enabled;
+                //sprite.enabled = !sprite.enabled;
             }
 
             if (invTimer >= invTime)
             {
                 invencible = false;
-                sprite.enabled = true;
+                //sprite.enabled = true;
             }
         }
-        anim.SetBool("Damage", damage);
+        //anim.SetBool("Damage", damage);
 
         // 9 (Invencible) - 0 (Default)
         this.gameObject.layer = damage || invencible ? 9 : 0;
-        #endregion
-
-        #region Arm Animators
-        normalArm.GetComponent<SpriteRenderer>().flipX = sprite.flipX;
-        shootArm.GetComponent<SpriteRenderer>().flipX = sprite.flipX;
-
-        if (!shooting)
-        {
-            normalArm.GetComponent<SpriteRenderer>().enabled = sprite.enabled;
-            shootArm.GetComponent<SpriteRenderer>().enabled = false;
-        }
-        else
-        {
-            shootArm.GetComponent<SpriteRenderer>().enabled = sprite.enabled;
-            normalArm.GetComponent<SpriteRenderer>().enabled = false;
-        }
-
-        if (damage || slide)
-        {
-            shootArm.GetComponent<SpriteRenderer>().enabled = false;
-            normalArm.GetComponent<SpriteRenderer>().enabled = false;
-        }
-
-        normalArm.GetComponent<Animator>().SetBool("Run", anim.GetBool("Run") && !anim.GetBool("Slide"));
-        normalArm.GetComponent<Animator>().SetBool("Jump", anim.GetBool("Jump"));
-        normalArm.GetComponent<Animator>().SetBool("Ground", anim.GetBool("Ground"));
-        shootArm.GetComponent<Animator>().SetBool("Run", anim.GetBool("Run") && !anim.GetBool("Slide"));
-        shootArm.GetComponent<Animator>().SetBool("Jump", anim.GetBool("Jump"));
-        shootArm.GetComponent<Animator>().SetBool("Ground", anim.GetBool("Ground"));
         #endregion
     }
 
     public void Damage(int d, int x)
     {
         health -= d;
-        sprite.flipX = x == 1 ? false : true;
+        //sprite.flipX = x == 1 ? false : true;
 
         GameObject.Instantiate(damageParticle, this.transform);
 
@@ -604,7 +495,6 @@ public class Player : MonoBehaviour
         jump = false;
         endJump = false;
         keepSlideSpeed = false;
-        shooting = false;
 
         damageTimer = 0;
         invTimer = 0;
@@ -616,44 +506,6 @@ public class Player : MonoBehaviour
         }
     }
 
-    void Shoot()
-    {
-        if (shots >= maxShots)
-        {
-            return;
-        }
-
-        shots++;
-        GameObject s = Instantiate(shot, shotSpawn.position, transform.rotation, null);
-        s.GetComponent<Shot>().dir = lastXdir;
-
-        float rRange = 0.15f;
-        float rX = Random.Range(-rRange, rRange);
-        float rY = Random.Range(-rRange, rRange);
-        GameObject f = Instantiate(shootFlash, shotSpawn.position - new Vector3(shotFlashOffset*lastXdir, 0) + new Vector3(rX, rY), transform.rotation, transform);
-        f.GetComponent<SpriteRenderer>().flipX = sprite.flipX;
-
-        shooting = true;
-        shootingTimer = 0;
-
-        volleyCount++;
-        if (volleyCount >= volleyLimit)
-        {
-            volley = true;
-        }
-
-        willVolley = true;
-        keepVolleyTimer = 0;
-
-        anim.ResetTrigger("Shoot");
-        anim.SetTrigger("Shoot");
-
-        if (volley)
-        {
-            s.GetComponent<Shot>().vel *= volleySpeedMult;
-        }
-    }
-
     private bool GroundCheck()
     {
         bool prevGround = grounded;
@@ -661,7 +513,7 @@ public class Player : MonoBehaviour
         RaycastHit2D r;
         r = Physics2D.BoxCast(box.bounds.center, new Vector2(box.size.x, box.size.y/2), 0, Vector2.down, box.size.y/3.5f, groundCollisionLayer);
 
-        bool ground = (r.collider != null && r.collider.tag == "Ground" && r.normal.y > 0);
+        bool ground = (r.collider != null && r.collider.tag == "Level" && r.normal.y > 0);
 
         if (r.point.x != 0 && r.point.y != 0) Debug.DrawRay(r.point, Vector2.down, Color.red);
 
@@ -689,7 +541,7 @@ public class Player : MonoBehaviour
                     }
 
                     // Fall animation
-                    anim.SetBool("Jump", true);
+                    //anim.SetBool("Jump", true);
                 }
             }
 
