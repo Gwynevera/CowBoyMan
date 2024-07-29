@@ -83,7 +83,7 @@ public class Player : MonoBehaviour
     public float minStickValue = 0.5f;
 
     Rigidbody2D rb;
-    BoxCollider2D box;
+    CapsuleCollider2D Capsule;
     //Animator anim;
     //SpriteRenderer sprite;
 
@@ -158,7 +158,7 @@ public class Player : MonoBehaviour
     void Start()
     {
         rb = GetComponent<Rigidbody2D>();
-        box = GetComponent<BoxCollider2D>();
+        Capsule = GetComponent<CapsuleCollider2D>();
         //anim = GetComponent<Animator>();
         //sprite = GetComponent<SpriteRenderer>();
 
@@ -371,16 +371,16 @@ public class Player : MonoBehaviour
             }
 
             // Lower Hitbox
-            box.offset = slideHitboxOffset;
-            box.size = slideHitboxSize;
+            Capsule.offset = slideHitboxOffset;
+            Capsule.size = slideHitboxSize;
         }
         else
         {
             rb.constraints = RigidbodyConstraints2D.FreezeRotation;
 
             // Normal Hitbox
-            box.offset = normalHitboxOffset;
-            box.size = normalHitboxSize;
+            Capsule.offset = normalHitboxOffset;
+            Capsule.size = normalHitboxSize;
         }
 
         //anim.SetBool("Slide", slide);
@@ -511,7 +511,7 @@ public class Player : MonoBehaviour
         bool prevGround = grounded;
 
         RaycastHit2D r;
-        r = Physics2D.BoxCast(box.bounds.center, new Vector2(box.size.x, box.size.y/2), 0, Vector2.down, box.size.y/3.5f, groundCollisionLayer);
+        r = Physics2D.BoxCast(Capsule.bounds.center, new Vector2(Capsule.size.x, Capsule.size.y/2), 0, Vector2.down, Capsule.size.y/3.5f, groundCollisionLayer);
 
         bool ground = (r.collider != null && r.collider.tag == "Level" && r.normal.y > 0);
 
@@ -557,7 +557,7 @@ public class Player : MonoBehaviour
     private bool WallCheck()
     {
         RaycastHit2D r;
-        r = Physics2D.BoxCast(box.bounds.center, box.size * new Vector2(0.5f, 1), 0, Vector2.right*dir.x, box.size.x/2, groundCollisionLayer);
+        r = Physics2D.BoxCast(Capsule.bounds.center, Capsule.size * new Vector2(0.5f, 1), 0, Vector2.right*dir.x, Capsule.size.x/2, groundCollisionLayer);
 
         if (r.point.x != 0 && r.point.y != 0) Debug.DrawRay(r.point, Vector2.right * dir, Color.blue);
 
@@ -567,7 +567,7 @@ public class Player : MonoBehaviour
     private bool RoofCheck()
     {
         RaycastHit2D r;
-        r = Physics2D.BoxCast(box.bounds.center, box.size * new Vector2(1, 0.5f), 0, Vector2.up, box.size.y/2, groundCollisionLayer);
+        r = Physics2D.BoxCast(Capsule.bounds.center, Capsule.size * new Vector2(1, 0.5f), 0, Vector2.up, Capsule.size.y/2, groundCollisionLayer);
 
         if (r.point.x != 0 && r.point.y != 0) Debug.DrawRay(r.point, Vector2.up, Color.green);
 
