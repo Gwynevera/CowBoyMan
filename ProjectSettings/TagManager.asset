@@ -9,6 +9,7 @@ TagManager:
   - Shot
   - Enemy
   - Cloth
+  - Interactable
   layers:
   - Default
   - TransparentFX
