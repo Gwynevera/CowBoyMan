@@ -17,11 +17,14 @@ public class BulletInstantiator : MonoBehaviour
     private float vignetteOrignialIntesity;
     private IEnumerator vignetteCorutine;
 
+    private Player playerMovement;
+    private bool stopOnce = false;
+
     private bool cooldownCharging = false;
 
     public bool canShoot = true;
     private bool loadingShoot = false;
-    private bool resetingTime = false;
+    public bool resetingTime = false;
     public float chargedShootTime = 0;
     public float maxChargingShootTime = 0;
     public float minBulletmultiplier = 0.5f; 
@@ -30,6 +33,7 @@ public class BulletInstantiator : MonoBehaviour
     private GameObject bulletInstance;
     private CameraMovement cm;
     private IEnumerator zoomCorutine;
+    public IEnumerator bulletZoomCorutine;
     private IEnumerator shakeCorutine;
     private float normalFixedDeltaTime;
 
@@ -44,6 +48,9 @@ public class BulletInstantiator : MonoBehaviour
     [Header("Particle")]
     public ParticleSystem smokePS;
 
+    [Header("Bullet Skill")]
+    public BulletSkill bulletSkill = BulletSkill.NONE;
+
     private void Start()
     {
         bulletPrefab = Resources.Load("Instanciables/Bullet") as GameObject;
@@ -52,7 +59,7 @@ public class BulletInstantiator : MonoBehaviour
         postproces = GameObject.Find("PostProcessing").GetComponent<Volume>();
         postproces.profile.TryGet(out vignette);
         vignetteOrignialIntesity = vignette.intensity.value;
-
+        playerMovement = GetComponent<Player>();
 
     }
     private void Update()
@@ -62,25 +69,31 @@ public class BulletInstantiator : MonoBehaviour
 
         if (resetingTime)
         {
-            Time.timeScale += (1f / ShooitngCooldown) * Time.unscaledDeltaTime;
+            playerMovement.enabled = true;
+            stopOnce = false;
+            Time.timeScale = 1;
             Time.timeScale = Mathf.Clamp(Time.timeScale, 0 ,1);
+            resetingTime = false;
+            Time.fixedDeltaTime = normalFixedDeltaTime;
             
-            if (Time.timeScale == 1) {
-                resetingTime = false;
-                Time.fixedDeltaTime = normalFixedDeltaTime;
-                
-                Downarm.active = true;
-                UperArm.lockArm = false;
-            }
+            Downarm.active = true;
+            UperArm.lockArm = false;
+            
 
         }
 
-      
+        
         if (Input.GetKey(KeyCode.Mouse0) && canShoot)
         {
+            if (!stopOnce) {
+                playerMovement.enabled = false;
+                GetComponent<Rigidbody2D>().velocity = Vector2.zero;
+                stopOnce = true;
+            }
+            
+
             if (!loadingShoot)
             {
-
                
                 cm.constraintsEnabled = false;
                 cm.StopAllCoroutines();
@@ -118,9 +131,6 @@ public class BulletInstantiator : MonoBehaviour
     private void instantiateBullet()
     {
 
-       
-
-
         Time.timeScale = 0.05f;
         normalFixedDeltaTime = Time.fixedDeltaTime;
         Time.fixedDeltaTime = Time.timeScale * 0.02f;
@@ -131,7 +141,7 @@ public class BulletInstantiator : MonoBehaviour
         Vector3 dir = (Camera.main.ScreenToWorldPoint(Input.mousePosition) - spawnPoint.position).normalized;
         bl.direction = dir.normalized;
         bl.instantiator = this;
-
+        bl.bulletSkill = bulletSkill;
         if(cm.resetingCameraCorutine != null) {
             StopCoroutine(cm.resetingCameraCorutine);
             cm.resetingCamera = false;
@@ -141,8 +151,8 @@ public class BulletInstantiator : MonoBehaviour
         cm.Bullet = bulletInstance;
         cm.cameraTarget = CameraTarget.BULLET;
 
-        
-        StartCoroutine(cm.CameraBulletZoom(bulletInstance));
+        bulletZoomCorutine = cm.CameraBulletZoom(bulletInstance);
+        StartCoroutine(bulletZoomCorutine);
 
         float chargeTimePercentage = chargedShootTime / maxChargingShootTime;
 
@@ -178,13 +188,10 @@ public class BulletInstantiator : MonoBehaviour
 
     IEnumerator shootingCooldown()
     {
-        
-        resetingTime = true;
         cooldownCharging = true;
         yield return new WaitForSecondsRealtime(ShooitngCooldown);
         canShoot = true;
         cooldownCharging = false;
-        resetingTime = false;
         smokePS.Stop();
 
     }
@@ -217,6 +224,31 @@ public class BulletInstantiator : MonoBehaviour
         }
 
     }
+
+    public void StopZoom()
+    {
+        StopCoroutine(bulletZoomCorutine);
+    }
+
+    public void setSkill(string skill)
+    {
+        switch (skill)
+        {
+            case "Piercing":
+                bulletSkill = BulletSkill.PIERCING; 
+                break;
+            case "Subbullets":
+                bulletSkill = BulletSkill.SUBBULLETS;
+                break;
+            default:
+                bulletSkill = BulletSkill.NONE;
+                break;
+        }
+
+        Time.timeScale = 1;
+
+    }
+
 
     private void OnDrawGizmosSelected()
     {

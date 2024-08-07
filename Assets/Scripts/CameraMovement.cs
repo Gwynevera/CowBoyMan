@@ -19,7 +19,7 @@ public class CameraMovement : MonoBehaviour
     private float originalZ;
 
     [Header("Traveling")]
-    [SerializeField] private float initialZoom = 10.0f;
+    [SerializeField] public float initialZoom = 10.0f;
     [SerializeField] private float timeTraveling = 2.0f;
     private float deltaTime = 0;
 
@@ -46,18 +46,18 @@ public class CameraMovement : MonoBehaviour
 
     private Vector3 CameraTargetPos = new Vector3();
     private Vector3 posFinal = new Vector3();
-    [NonSerialized]public bool resetingCamera = false;
+    public bool resetingCamera = false;
     [NonSerialized]public IEnumerator resetingCameraCorutine;
 
     private void Start()
     {
-
+        Time.timeScale = 0;
         mainCam = this.GetComponent<Camera>();
         cameraHolder = this.transform.parent.transform;
         originalZ = cameraHolder.transform.position.z;
         
 
-        StartCoroutine(CameraZoom(2, initialZoom));
+        StartCoroutine(CameraZoom(1, initialZoom));
       
     }
 
@@ -217,7 +217,7 @@ public class CameraMovement : MonoBehaviour
 
             mainCam.orthographicSize = zoomLerp.x;
 
-            elapsed += Time.deltaTime;
+            elapsed += Time.unscaledDeltaTime;
 
             yield return null;
         }
@@ -232,25 +232,8 @@ public class CameraMovement : MonoBehaviour
         float elapsed = 0.0f;
         float percentage = 0.0f;
 
-        Vector3 posOriginal = this.transform.position;
-        Vector3 _posFinal = this.transform.position;
-
-        _posFinal.x = Player.transform.position.x + (Player.transform.position.x - Player.transform.position.x) / 2;
-        _posFinal.y = Player.transform.position.y + (Player.transform.position.y - Player.transform.position.y) / 2;
-
-        if(constraintsEnabled) _posFinal = new Vector3(_posFinal.x, _posFinal.y + yOffset, originalZ);
-        else _posFinal = new Vector3(_posFinal.x, _posFinal.y, originalZ);
-
-        if (_posFinal.y < minY && constraintsEnabled)
-        {
-            _posFinal.y = minY;
-        }
-        
+       
         cameraTarget = CameraTarget.PLAYER1;
-
-
-        posOriginal.z = originalZ;
-        posFinal.z = originalZ;
 
 
         while (elapsed < duration)
@@ -258,32 +241,24 @@ public class CameraMovement : MonoBehaviour
             percentage = elapsed / duration;
             Vector3 zoomLerp = Vector3.Lerp(new Vector3(StartZoom, 0, 0), new Vector3(initialZoom, 0, 0), percentage);
 
-            cameraHolder.transform.position = Vector3.Lerp(posOriginal, _posFinal, percentage);
-
             mainCam.orthographicSize = zoomLerp.x;
 
             elapsed += Time.fixedDeltaTime;
 
+            Debug.Log(elapsed);
+            
             yield return null;
         }
 
-        
-
-        CameraTargetPos.x = Player.transform.position.x + (Player.transform.position.x - Player.transform.position.x) / 2;
-        CameraTargetPos.y = Player.transform.position.y + (Player.transform.position.y - Player.transform.position.y) / 2;
-
-        if (constraintsEnabled)
-            posFinal = new Vector3(CameraTargetPos.x, CameraTargetPos.y + yOffset, originalZ);
-        else
-            posFinal = new Vector3(CameraTargetPos.x, CameraTargetPos.y, originalZ);
-
-        if (posFinal.y < minY && constraintsEnabled)
-        {
-            posFinal.y = minY;
-        }
-
+     
         resetingCamera = false;
         
+    }
+
+
+    public void resetZoom(float duration)
+    {
+        StartCoroutine(CameraZoom(duration, initialZoom));
     }
 
 }
