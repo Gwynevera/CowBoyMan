@@ -244,6 +244,12 @@ public class BulletLogic : MonoBehaviour
 
         if(collision.transform.tag == "Level") destroyBullet(false);
 
+        if(collision.transform.tag == "Interactable")
+        {
+            collision.transform.GetComponent<Interactable>().activate();
+            destroyBullet(false);
+        }
+
     }
 
 
